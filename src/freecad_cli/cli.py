@@ -119,6 +119,14 @@ def build_parser() -> argparse.ArgumentParser:
     screenshot.add_argument("--height", type=int)
     screenshot.add_argument("--focus-object")
 
+    preview = sub.add_parser("preview")
+    preview.add_argument("document")
+    preview.add_argument("output")
+    preview.add_argument("--view", default="Isometric")
+    preview.add_argument("--width", type=int)
+    preview.add_argument("--height", type=int)
+    preview.add_argument("--focus-object")
+
     export = sub.add_parser("export")
     export.add_argument("kind", choices=["step", "stl"])
     export.add_argument("document")
@@ -268,6 +276,12 @@ def cmd_screenshot(args) -> int:
     return 0
 
 
+def cmd_preview(args) -> int:
+    out = client_from(args).screenshot(args.output, view=args.view, width=args.width, height=args.height, focus_object=args.focus_object)
+    _print_json({"document": args.document, "preview": str(out)})
+    return 0
+
+
 def cmd_export(args) -> int:
     _print_json(client_from(args).export_document(args.document, args.output, args.kind, args.objects))
     return 0
@@ -302,6 +316,8 @@ def main() -> int:
             return cmd_run(args)
         if args.group == "screenshot":
             return cmd_screenshot(args)
+        if args.group == "preview":
+            return cmd_preview(args)
         if args.group == "export":
             return cmd_export(args)
         raise ValueError(f"Unknown command group: {args.group}")

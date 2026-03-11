@@ -29,6 +29,7 @@ fc CLI -> XML-RPC (localhost:9875) -> FreeCADMCP addon -> FreeCAD
 - `fc create prism DOC NAME --polygon 6 --circumradius 10 --height 20`
 - `fc create drone DOC --variant quadcopter`
 - `fc screenshot out.png`
+- `fc preview DOC out.png`
 - `fc export step DOC out.step`
 - `fc export stl DOC out.stl`
 
@@ -78,6 +79,7 @@ fc create prism demo p1 --polygon 6 --circumradius 10 --height 20 --x 120
 fc create drone demo-drone --variant quadcopter
 fc run ./script.py
 fc screenshot ./demo.png
+fc preview demo ./demo-preview.png
 fc export step demo ./demo.step
 fc export stl demo ./demo.stl
 ```
