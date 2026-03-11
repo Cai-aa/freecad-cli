@@ -48,6 +48,26 @@ def build_parser() -> argparse.ArgumentParser:
     doc_objects = doc_sub.add_parser("objects")
     doc_objects.add_argument("document")
 
+    create = sub.add_parser("create")
+    create_sub = create.add_subparsers(dest="create_cmd", required=True)
+    box = create_sub.add_parser("box")
+    box.add_argument("document")
+    box.add_argument("name")
+    box.add_argument("--length", type=float, required=True)
+    box.add_argument("--width", type=float, required=True)
+    box.add_argument("--height", type=float, required=True)
+    box.add_argument("--x", type=float, default=0)
+    box.add_argument("--y", type=float, default=0)
+    box.add_argument("--z", type=float, default=0)
+    cyl = create_sub.add_parser("cylinder")
+    cyl.add_argument("document")
+    cyl.add_argument("name")
+    cyl.add_argument("--radius", type=float, required=True)
+    cyl.add_argument("--height", type=float, required=True)
+    cyl.add_argument("--x", type=float, default=0)
+    cyl.add_argument("--y", type=float, default=0)
+    cyl.add_argument("--z", type=float, default=0)
+
     run = sub.add_parser("run")
     run.add_argument("python_file")
 
@@ -146,6 +166,16 @@ def cmd_doc_objects(args) -> int:
     return 0
 
 
+def cmd_create_box(args) -> int:
+    _print_json(client_from(args).create_box(args.document, args.name, args.length, args.width, args.height, args.x, args.y, args.z))
+    return 0
+
+
+def cmd_create_cylinder(args) -> int:
+    _print_json(client_from(args).create_cylinder(args.document, args.name, args.radius, args.height, args.x, args.y, args.z))
+    return 0
+
+
 def cmd_run(args) -> int:
     code = Path(args.python_file).read_text()
     _print_json(client_from(args).execute_code(code))
@@ -173,17 +203,11 @@ def main() -> int:
         if args.group == "doctor":
             return cmd_doctor(args)
         if args.group == "addon":
-            return {
-                "install": cmd_addon_install,
-                "path": cmd_addon_path,
-                "status": cmd_addon_status,
-            }[args.addon_cmd](args)
+            return {"install": cmd_addon_install, "path": cmd_addon_path, "status": cmd_addon_status}[args.addon_cmd](args)
         if args.group == "doc":
-            return {
-                "create": cmd_doc_create,
-                "list": cmd_doc_list,
-                "objects": cmd_doc_objects,
-            }[args.doc_cmd](args)
+            return {"create": cmd_doc_create, "list": cmd_doc_list, "objects": cmd_doc_objects}[args.doc_cmd](args)
+        if args.group == "create":
+            return {"box": cmd_create_box, "cylinder": cmd_create_cylinder}[args.create_cmd](args)
         if args.group == "run":
             return cmd_run(args)
         if args.group == "screenshot":

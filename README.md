@@ -20,6 +20,8 @@ fc CLI -> XML-RPC (localhost:9875) -> FreeCADMCP addon -> FreeCAD
 - `fc doc list`
 - `fc doc objects DOC`
 - `fc run script.py`
+- `fc create box DOC NAME --length 10 --width 20 --height 5`
+- `fc create cylinder DOC NAME --radius 5 --height 20`
 - `fc screenshot out.png`
 - `fc export step DOC out.step`
 - `fc export stl DOC out.stl`
@@ -60,6 +62,8 @@ fc addon status
 fc doc create demo
 fc doc list
 fc doc objects demo
+fc create box demo box1 --length 20 --width 10 --height 5
+fc create cylinder demo cyl1 --radius 5 --height 20
 fc run ./script.py
 fc screenshot ./demo.png
 fc export step demo ./demo.step
