@@ -40,6 +40,11 @@ def build_parser() -> argparse.ArgumentParser:
     addon_sub.add_parser("path")
     addon_sub.add_parser("status")
 
+    rpc = sub.add_parser("rpc")
+    rpc_sub = rpc.add_subparsers(dest="rpc_cmd", required=True)
+    rpc_start = rpc_sub.add_parser("start")
+    rpc_start.add_argument("--seconds", type=int, default=60)
+
     doc = sub.add_parser("doc")
     doc_sub = doc.add_subparsers(dest="doc_cmd", required=True)
     doc_create = doc_sub.add_parser("create")
@@ -67,6 +72,22 @@ def build_parser() -> argparse.ArgumentParser:
     cyl.add_argument("--x", type=float, default=0)
     cyl.add_argument("--y", type=float, default=0)
     cyl.add_argument("--z", type=float, default=0)
+    sphere = create_sub.add_parser("sphere")
+    sphere.add_argument("document")
+    sphere.add_argument("name")
+    sphere.add_argument("--radius", type=float, required=True)
+    sphere.add_argument("--x", type=float, default=0)
+    sphere.add_argument("--y", type=float, default=0)
+    sphere.add_argument("--z", type=float, default=0)
+    cone = create_sub.add_parser("cone")
+    cone.add_argument("document")
+    cone.add_argument("name")
+    cone.add_argument("--radius1", type=float, required=True)
+    cone.add_argument("--radius2", type=float, required=True)
+    cone.add_argument("--height", type=float, required=True)
+    cone.add_argument("--x", type=float, default=0)
+    cone.add_argument("--y", type=float, default=0)
+    cone.add_argument("--z", type=float, default=0)
 
     run = sub.add_parser("run")
     run.add_argument("python_file")
@@ -151,6 +172,20 @@ def cmd_addon_status(args) -> int:
     return 0
 
 
+def cmd_rpc_start(args) -> int:
+    script = Path(tempfile.gettempdir()) / "freecad_cli_start_rpc.py"
+    script.write_text(
+        "import sys, time\n"
+        f"sys.path.insert(0, {str(addon_dir())!r})\n"
+        "from rpc_server.rpc_server import start_rpc_server\n"
+        "print(start_rpc_server())\n"
+        f"time.sleep({int(args.seconds)})\n"
+    )
+    subprocess.Popen([str(freecad_bin()), str(script)], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    print(f"started FreeCAD RPC bootstrap for {args.seconds}s")
+    return 0
+
+
 def cmd_doc_create(args) -> int:
     _print_json(client_from(args).create_document(args.name))
     return 0
@@ -173,6 +208,16 @@ def cmd_create_box(args) -> int:
 
 def cmd_create_cylinder(args) -> int:
     _print_json(client_from(args).create_cylinder(args.document, args.name, args.radius, args.height, args.x, args.y, args.z))
+    return 0
+
+
+def cmd_create_sphere(args) -> int:
+    _print_json(client_from(args).create_sphere(args.document, args.name, args.radius, args.x, args.y, args.z))
+    return 0
+
+
+def cmd_create_cone(args) -> int:
+    _print_json(client_from(args).create_cone(args.document, args.name, args.radius1, args.radius2, args.height, args.x, args.y, args.z))
     return 0
 
 
@@ -204,10 +249,17 @@ def main() -> int:
             return cmd_doctor(args)
         if args.group == "addon":
             return {"install": cmd_addon_install, "path": cmd_addon_path, "status": cmd_addon_status}[args.addon_cmd](args)
+        if args.group == "rpc":
+            return {"start": cmd_rpc_start}[args.rpc_cmd](args)
         if args.group == "doc":
             return {"create": cmd_doc_create, "list": cmd_doc_list, "objects": cmd_doc_objects}[args.doc_cmd](args)
         if args.group == "create":
-            return {"box": cmd_create_box, "cylinder": cmd_create_cylinder}[args.create_cmd](args)
+            return {
+                "box": cmd_create_box,
+                "cylinder": cmd_create_cylinder,
+                "sphere": cmd_create_sphere,
+                "cone": cmd_create_cone,
+            }[args.create_cmd](args)
         if args.group == "run":
             return cmd_run(args)
         if args.group == "screenshot":

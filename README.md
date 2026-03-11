@@ -16,12 +16,15 @@ fc CLI -> XML-RPC (localhost:9875) -> FreeCADMCP addon -> FreeCAD
 - `fc addon install`
 - `fc addon path`
 - `fc addon status`
+- `fc rpc start`
 - `fc doc create NAME`
 - `fc doc list`
 - `fc doc objects DOC`
 - `fc run script.py`
 - `fc create box DOC NAME --length 10 --width 20 --height 5`
 - `fc create cylinder DOC NAME --radius 5 --height 20`
+- `fc create sphere DOC NAME --radius 10`
+- `fc create cone DOC NAME --radius1 8 --radius2 2 --height 20`
 - `fc screenshot out.png`
 - `fc export step DOC out.step`
 - `fc export stl DOC out.stl`
@@ -59,11 +62,14 @@ fc status
 ```bash
 fc addon path
 fc addon status
+fc rpc start --seconds 60
 fc doc create demo
 fc doc list
 fc doc objects demo
 fc create box demo box1 --length 20 --width 10 --height 5
 fc create cylinder demo cyl1 --radius 5 --height 20
+fc create sphere demo s1 --radius 8 --x 40
+fc create cone demo cone1 --radius1 8 --radius2 2 --height 20 --x 60
 fc run ./script.py
 fc screenshot ./demo.png
 fc export step demo ./demo.step

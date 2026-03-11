@@ -63,6 +63,40 @@ class FreeCADRPCClient:
         """)
         return self.execute_code(code)
 
+    def create_sphere(self, doc_name: str, obj_name: str, radius: float, x: float = 0, y: float = 0, z: float = 0) -> dict[str, Any]:
+        code = textwrap.dedent(f"""
+        import FreeCAD as App
+        doc = App.getDocument({doc_name!r})
+        if doc is None:
+            raise ValueError(f'Document not found: {doc_name}')
+        obj = doc.getObject({obj_name!r})
+        if obj is None:
+            obj = doc.addObject('Part::Sphere', {obj_name!r})
+        obj.Radius = {float(radius)!r}
+        obj.Placement.Base = App.Vector({float(x)!r}, {float(y)!r}, {float(z)!r})
+        doc.recompute()
+        print(obj.Name)
+        """)
+        return self.execute_code(code)
+
+    def create_cone(self, doc_name: str, obj_name: str, radius1: float, radius2: float, height: float, x: float = 0, y: float = 0, z: float = 0) -> dict[str, Any]:
+        code = textwrap.dedent(f"""
+        import FreeCAD as App
+        doc = App.getDocument({doc_name!r})
+        if doc is None:
+            raise ValueError(f'Document not found: {doc_name}')
+        obj = doc.getObject({obj_name!r})
+        if obj is None:
+            obj = doc.addObject('Part::Cone', {obj_name!r})
+        obj.Radius1 = {float(radius1)!r}
+        obj.Radius2 = {float(radius2)!r}
+        obj.Height = {float(height)!r}
+        obj.Placement.Base = App.Vector({float(x)!r}, {float(y)!r}, {float(z)!r})
+        doc.recompute()
+        print(obj.Name)
+        """)
+        return self.execute_code(code)
+
     def screenshot(self, output: str | Path, view: str = "Isometric", width: int | None = None, height: int | None = None, focus_object: str | None = None) -> Path:
         data = self.server.get_active_screenshot(view, width, height, focus_object)
         if not data:
