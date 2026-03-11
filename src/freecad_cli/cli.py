@@ -88,6 +88,26 @@ def build_parser() -> argparse.ArgumentParser:
     cone.add_argument("--x", type=float, default=0)
     cone.add_argument("--y", type=float, default=0)
     cone.add_argument("--z", type=float, default=0)
+    torus = create_sub.add_parser("torus")
+    torus.add_argument("document")
+    torus.add_argument("name")
+    torus.add_argument("--radius1", type=float, required=True)
+    torus.add_argument("--radius2", type=float, required=True)
+    torus.add_argument("--x", type=float, default=0)
+    torus.add_argument("--y", type=float, default=0)
+    torus.add_argument("--z", type=float, default=0)
+    prism = create_sub.add_parser("prism")
+    prism.add_argument("document")
+    prism.add_argument("name")
+    prism.add_argument("--polygon", type=int, required=True)
+    prism.add_argument("--circumradius", type=float, required=True)
+    prism.add_argument("--height", type=float, required=True)
+    prism.add_argument("--x", type=float, default=0)
+    prism.add_argument("--y", type=float, default=0)
+    prism.add_argument("--z", type=float, default=0)
+    drone = create_sub.add_parser("drone")
+    drone.add_argument("document")
+    drone.add_argument("--variant", default="quadcopter")
 
     run = sub.add_parser("run")
     run.add_argument("python_file")
@@ -221,6 +241,21 @@ def cmd_create_cone(args) -> int:
     return 0
 
 
+def cmd_create_torus(args) -> int:
+    _print_json(client_from(args).create_torus(args.document, args.name, args.radius1, args.radius2, args.x, args.y, args.z))
+    return 0
+
+
+def cmd_create_prism(args) -> int:
+    _print_json(client_from(args).create_prism(args.document, args.name, args.polygon, args.circumradius, args.height, args.x, args.y, args.z))
+    return 0
+
+
+def cmd_create_drone(args) -> int:
+    _print_json(client_from(args).create_drone(args.document, args.variant))
+    return 0
+
+
 def cmd_run(args) -> int:
     code = Path(args.python_file).read_text()
     _print_json(client_from(args).execute_code(code))
@@ -259,6 +294,9 @@ def main() -> int:
                 "cylinder": cmd_create_cylinder,
                 "sphere": cmd_create_sphere,
                 "cone": cmd_create_cone,
+                "torus": cmd_create_torus,
+                "prism": cmd_create_prism,
+                "drone": cmd_create_drone,
             }[args.create_cmd](args)
         if args.group == "run":
             return cmd_run(args)

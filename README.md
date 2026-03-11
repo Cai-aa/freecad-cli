@@ -25,6 +25,9 @@ fc CLI -> XML-RPC (localhost:9875) -> FreeCADMCP addon -> FreeCAD
 - `fc create cylinder DOC NAME --radius 5 --height 20`
 - `fc create sphere DOC NAME --radius 10`
 - `fc create cone DOC NAME --radius1 8 --radius2 2 --height 20`
+- `fc create torus DOC NAME --radius1 20 --radius2 5`
+- `fc create prism DOC NAME --polygon 6 --circumradius 10 --height 20`
+- `fc create drone DOC --variant quadcopter`
 - `fc screenshot out.png`
 - `fc export step DOC out.step`
 - `fc export stl DOC out.stl`
@@ -70,6 +73,9 @@ fc create box demo box1 --length 20 --width 10 --height 5
 fc create cylinder demo cyl1 --radius 5 --height 20
 fc create sphere demo s1 --radius 8 --x 40
 fc create cone demo cone1 --radius1 8 --radius2 2 --height 20 --x 60
+fc create torus demo t1 --radius1 20 --radius2 5 --x 90
+fc create prism demo p1 --polygon 6 --circumradius 10 --height 20 --x 120
+fc create drone demo-drone --variant quadcopter
 fc run ./script.py
 fc screenshot ./demo.png
 fc export step demo ./demo.step
