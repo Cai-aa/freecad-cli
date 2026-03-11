@@ -1,31 +1,30 @@
 # freecad-cli
 
-A local CLI wrapper for controlling macOS FreeCAD through the `freecad-mcp` addon RPC server, without Docker.
+本地 FreeCAD CLI，基于 `freecad-mcp` 的 XML-RPC addon，不需要 Docker。
 
-## Architecture
+## 架构
 
 ```text
-fc CLI -> XML-RPC (localhost:9875) -> freecad-mcp addon -> FreeCAD
+fc CLI -> XML-RPC (localhost:9875) -> FreeCADMCP addon -> FreeCAD
 ```
 
-This project does **not** talk to the standalone `freecad-mcp` MCP server directly.
-It reuses the same FreeCAD addon/RPC layer that `freecad-mcp` depends on, then wraps it in a local CLI.
+## 目前支持
 
-## MVP commands
-
-- `fc install-addon`
-- `fc addon-path`
+- `fc doctor`
 - `fc ping`
 - `fc status`
-- `fc doctor`
-- `fc create-document NAME`
-- `fc list-objects DOC`
-- `fc exec script.py`
+- `fc addon install`
+- `fc addon path`
+- `fc addon status`
+- `fc doc create NAME`
+- `fc doc list`
+- `fc doc objects DOC`
+- `fc run script.py`
 - `fc screenshot out.png`
 - `fc export step DOC out.step`
 - `fc export stl DOC out.stl`
 
-## Install
+## 安装
 
 ```bash
 cd freecad-cli
@@ -34,18 +33,18 @@ python3 -m venv .venv
 pip install -e .
 ```
 
-## Quickstart (tested on this Mac)
+## Quickstart
 
-1. Install addon:
+### 1. 安装 addon
 
 ```bash
-fc install-addon
+fc addon install
 ```
 
-2. Restart FreeCAD.
-3. In FreeCAD, switch to **MCP Addon** workbench.
-4. Click **Start RPC Server**.
-5. Verify:
+### 2. 重启 FreeCAD
+切到 **MCP Addon** workbench，然后点击 **Start RPC Server**。
+
+### 3. 检查
 
 ```bash
 fc doctor
@@ -53,46 +52,37 @@ fc ping
 fc status
 ```
 
-## Alternative: start RPC from a FreeCAD script
-
-This was validated locally too. Example:
-
-```python
-import sys, time
-sys.path.insert(0, '/Users/cai/Library/Application Support/FreeCAD/Mod/FreeCADMCP')
-from rpc_server.rpc_server import start_rpc_server
-print(start_rpc_server())
-time.sleep(20)
-```
-
-Run with:
+## 常用命令
 
 ```bash
-/Applications/FreeCAD.app/Contents/MacOS/FreeCAD /path/to/script.py
-```
-
-## Example session
-
-```bash
-fc create-document demo
-fc exec ./box.py
-fc list-objects demo
+fc addon path
+fc addon status
+fc doc create demo
+fc doc list
+fc doc objects demo
+fc run ./script.py
 fc screenshot ./demo.png
 fc export step demo ./demo.step
 fc export stl demo ./demo.stl
 ```
 
-## Notes
+## 说明
 
-- Default host/port: `localhost:9875`
-- Override with `--host` and `--port`
-- `export` is currently implemented by sending Python through `execute_code`
-- `screenshot` depends on current active FreeCAD view supporting image capture
-- This is an MVP intended to make FreeCAD scriptable like `gh`-style local CLIs
+- 默认 RPC 地址：`localhost:9875`
+- 可用 `--host` 和 `--port` 覆盖
+- `export` 当前是通过 `execute_code` 在 FreeCAD 里执行导出脚本完成的
+- `screenshot` 依赖当前 FreeCAD 视图支持截图
 
-## Common failure cases
+## 常见问题
 
-- `Connection refused` on `9875`: RPC server not started in FreeCAD
-- `fc ping` fails: addon missing, wrong host/port, or FreeCAD not running with RPC
-- `screenshot` fails: current active view does not support screenshots
-- `install-addon` succeeds but toolbar missing: restart FreeCAD
+### `Connection refused`
+说明 FreeCAD 的 RPC server 还没启动。
+
+### `fc ping` 失败
+通常是：
+- addon 没装好
+- FreeCAD 没启动 RPC
+- host/port 不对
+
+### `screenshot` 失败
+当前活动视图不支持截图。
