@@ -73,6 +73,16 @@ fc export stl demo ./demo.stl
 - `export` 当前是通过 `execute_code` 在 FreeCAD 里执行导出脚本完成的
 - `screenshot` 依赖当前 FreeCAD 视图支持截图
 
+## CLI-Anything 集成
+
+我已经把 CLI-Anything 插件安装到 Claude Code：
+- `~/.claude/plugins/cli-anything`
+
+在这个项目里，推荐把 CLI-Anything 当成**方法论/包装层**，把 `freecad-cli` 当成**实际控制层**。
+
+更多说明见：
+- `CLI_ANYTHING.md`
+
 ## 常见问题
 
 ### `Connection refused`
